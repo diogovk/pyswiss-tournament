@@ -1,0 +1,16 @@
+
+# Swiss tournament management written in python
+
+### About Swiss-system tournament
+
+A Swiss-system tournament is a tournament which uses a non-elimination format.
+Competitors meet one-to-one in each round and are paired using a predetermined set of rules designed to ensure that as far as possible a competitor plays competitors with the same current score, subject to not playing the
+same opponent more than once. The winner is the competitor with the highest aggregate points earned in all rounds.
+
+### Used resources
+
+https://storage.googleapis.com/supplemental_media/udacityu/3532028970/P2TournamentResults-GettingStarted.pdf
+http://www.postgresql.org/docs
+http://initd.org/psycopg/docs
+P2TournamentResults-GettingStarted.pdf provided by Udacity
+https://en.wikipedia.org/wiki/Swiss-system_tournament
