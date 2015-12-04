@@ -31,7 +31,7 @@ cd /vagrant/tournament
 ```
 
 ### Database set-up
-The follwing command will create the database scrutcture, after DELETING ALL DATA IN THE DATABASE **tournament**.
+The following command will create the database structure, after DELETING ALL DATA IN THE DATABASE **tournament**.
 
 ```
 psql -af tournament.sql
@@ -47,7 +47,11 @@ python2 tournament_test.py
 ### Used resources
 
 https://storage.googleapis.com/supplemental_media/udacityu/3532028970/P2TournamentResults-GettingStarted.pdf
+
 http://www.postgresql.org/docs
+
 http://initd.org/psycopg/docs
+
 P2TournamentResults-GettingStarted.pdf provided by Udacity
+
 https://en.wikipedia.org/wiki/Swiss-system_tournament
