@@ -44,7 +44,7 @@ def registerPlayer(name):
       name: the player's full name (need not be unique).
     """
     cursor = shared_conn.cursor()
-    insert_sql = "INSERT INTO players (name) VALUES (%s)"
+    insert_sql = "insert into players (name) values (%s)"
     cursor.execute(insert_sql, [name])
     shared_conn.commit()
 
@@ -77,8 +77,8 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
     with shared_conn.cursor() as cursor:
-      insert_sql = "INSERT INTO matches (name) VALUES (%s)"
-      cursor.execute(insert_sql, [name])
+      insert_sql = "insert into matches (winner, loser) values (%s, %s)"
+      cursor.execute(insert_sql, [winner, loser])
       shared_conn.commit()
 
 
