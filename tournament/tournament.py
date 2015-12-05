@@ -69,7 +69,14 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-
+    cursor=shared_conn.cursor()
+    query = """select pw.id, pw.name, pw.wins, players_matches.matches
+               from players_wins as pw left join players_matches
+               ON (players_matches.id = pw.id)"""
+    cursor.execute(query)
+    standings = cursor.fetchall()
+    cursor.close()
+    return standings
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -78,6 +85,10 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    cursor = shared_conn.cursor()
+    insert_sql = "INSERT INTO matches (name) VALUES (%s)"
+    cursor.execute(insert_sql, [name])
+    shared_conn.commit()
 
 
 def swissPairings():
