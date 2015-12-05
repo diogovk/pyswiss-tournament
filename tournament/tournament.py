@@ -15,29 +15,23 @@ shared_conn = connect()
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    cursor=shared_conn.cursor()
-    cursor.execute("delete from matches")
-    shared_conn.commit()
-    cursor.close()
-
+    with shared_conn.cursor() as cursor:
+      cursor.execute("delete from matches")
+      shared_conn.commit()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    cursor=shared_conn.cursor()
-    cursor.execute("delete from players")
-    shared_conn.commit()
-    cursor.close()
+    with shared_conn.cursor() as cursor:
+      cursor.execute("delete from players")
+      shared_conn.commit()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    cursor=shared_conn.cursor()
-    cursor.execute("select count(*) from players")
-    num_players = cursor.fetchone()[0]
-    cursor.close()
-    return num_players
-
+    with shared_conn.cursor() as cursor:
+      cursor.execute("select count(*) from players")
+      return cursor.fetchone()[0]
 
 
 def registerPlayer(name):
@@ -55,7 +49,6 @@ def registerPlayer(name):
     shared_conn.commit()
 
 
-
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
@@ -69,14 +62,12 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    cursor=shared_conn.cursor()
     query = """select pw.id, pw.name, pw.wins, players_matches.matches
                from players_wins as pw left join players_matches
                ON (players_matches.id = pw.id)"""
-    cursor.execute(query)
-    standings = cursor.fetchall()
-    cursor.close()
-    return standings
+    with shared_conn.cursor() as cursor:
+      cursor.execute(query)
+      return cursor.fetchall()
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -85,10 +76,10 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    cursor = shared_conn.cursor()
-    insert_sql = "INSERT INTO matches (name) VALUES (%s)"
-    cursor.execute(insert_sql, [name])
-    shared_conn.commit()
+    with shared_conn.cursor() as cursor:
+      insert_sql = "INSERT INTO matches (name) VALUES (%s)"
+      cursor.execute(insert_sql, [name])
+      shared_conn.commit()
 
 
 def swissPairings():
