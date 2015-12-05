@@ -19,6 +19,9 @@ To create and boot the virtual machine:
 vagrant up
 ```
 
+Please note that the ubuntu version in the Vagrantfile used as a guide trusty32, and I changed it to vivid32.
+The reason is that I wanted to use a newer version of psycopg.
+
 To access the machine:
 ```
 vagrant ssh
@@ -43,6 +46,11 @@ To run the test suite:
 ```
 python2 tournament_test.py
 ```
+
+## Dependencies
+
+* Postgresql
+* python-psycopg2 (versoion >= 2.5)
 
 ### Used resources
 
