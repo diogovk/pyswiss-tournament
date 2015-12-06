@@ -99,10 +99,10 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    query = """select players_wins.id, players_wins.name from players_wins
+               order by players_wins.wins"""
     with shared_conn.cursor() as cursor:
-        cursor.execute("""select players_wins.id, players_wins.name
-                        from players_wins
-                        order by players_wins.wins""")
+        cursor.execute(query)
         pairings = []
         for player_id, player_name in cursor:
             opponent = cursor.fetchone()
@@ -110,9 +110,7 @@ def swissPairings():
                 pair = (player_id, player_name, opponent[0], opponent[1])
                 pairings.append(pair)
             else:
-                print("Warning: no pair for player %s(%s)" %
+                print("Warn: no pair for player %s(%s)" %
+                      (player_id, player_name))
         return pairings
-
-
-
 
