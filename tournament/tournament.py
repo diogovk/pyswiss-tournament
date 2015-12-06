@@ -44,10 +44,10 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    cursor = shared_conn.cursor()
-    insert_sql = "insert into players (name) values (%s)"
-    cursor.execute(insert_sql, [name])
-    shared_conn.commit()
+    with shared_conn.cursor() as cursor:
+        insert_sql = "insert into players (name) values (%s)"
+        cursor.execute(insert_sql, [name])
+        shared_conn.commit()
 
 
 def playerStandings():
