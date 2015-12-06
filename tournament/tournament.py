@@ -13,25 +13,26 @@ def connect():
 
 shared_conn = connect()
 
+
 def deleteMatches():
     """Remove all the match records from the database."""
     with shared_conn.cursor() as cursor:
-      cursor.execute("delete from matches")
-      shared_conn.commit()
+        cursor.execute("delete from matches")
+        shared_conn.commit()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
     with shared_conn.cursor() as cursor:
-      cursor.execute("delete from players")
-      shared_conn.commit()
+        cursor.execute("delete from players")
+        shared_conn.commit()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
     with shared_conn.cursor() as cursor:
-      cursor.execute("select count(*) from players")
-      return cursor.fetchone()[0]
+        cursor.execute("select count(*) from players")
+        return cursor.fetchone()[0]
 
 
 def registerPlayer(name):
@@ -66,8 +67,9 @@ def playerStandings():
                from players_wins as pw left join players_matches
                ON (players_matches.id = pw.id)"""
     with shared_conn.cursor() as cursor:
-      cursor.execute(query)
-      return cursor.fetchall()
+        cursor.execute(query)
+        return cursor.fetchall()
+
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -77,9 +79,9 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
     with shared_conn.cursor() as cursor:
-      insert_sql = "insert into matches (winner, loser) values (%s, %s)"
-      cursor.execute(insert_sql, [winner, loser])
-      shared_conn.commit()
+        insert_sql = "insert into matches (winner, loser) values (%s, %s)"
+        cursor.execute(insert_sql, [winner, loser])
+        shared_conn.commit()
 
 
 def swissPairings():
@@ -97,5 +99,20 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    with shared_conn.cursor() as cursor:
+        cursor.execute("""select players_wins.id, players_wins.name
+                        from players_wins
+                        order by players_wins.wins""")
+        pairings = []
+        for player_id, player_name in cursor:
+            opponent = cursor.fetchone()
+            if opponent:
+                pair = (player_id, player_name, opponent[0], opponent[1])
+                pairings.append(pair)
+            else:
+                print("Warning: no pair for player %s(%s)" %
+        return pairings
+
+
 
 
