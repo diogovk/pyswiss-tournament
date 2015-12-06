@@ -55,6 +55,23 @@ def testRegisterCountDelete():
         raise ValueError("After deleting, countPlayers should return zero.")
     print "5. Players can be registered and deleted."
 
+def testCreateTournament():
+    deleteAllTournaments()
+    c = countTournaments()
+    tournament_id = createNewTournament()
+    tournament_id = createNewTournament()
+    tournament_id = createNewTournament()
+    if type(tournament_id) != int:
+        raise ValueError("Tourament id should be an integer")
+    c = countTournaments()
+    if c != 3:
+        raise ValueError("After creating 3 tournaments, countTournaments should be 3")
+    deleteAllTournaments()
+    c = countTournaments()
+    if c != 0:
+        raise ValueError("After deleting, countTournaments should return zero.")
+    print "6. Tournaments can be created and deleted"
+
 
 def testStandingsBeforeMatches():
     deleteMatches()
@@ -76,7 +93,7 @@ def testStandingsBeforeMatches():
     if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
         raise ValueError("Registered players' names should appear in standings, "
                          "even if they have no matches played.")
-    print "6. Newly registered players appear in the standings with no matches."
+    print "7. Newly registered players appear in the standings with no matches."
 
 
 def testReportMatches():
@@ -98,7 +115,7 @@ def testReportMatches():
             raise ValueError("Each match winner should have one win recorded.")
         elif i in (id2, id4) and w != 0:
             raise ValueError("Each match loser should have zero wins recorded.")
-    print "7. After a match, players have updated standings."
+    print "8. After a match, players have updated standings."
 
 
 def testPairings():
@@ -122,7 +139,7 @@ def testPairings():
     if correct_pairs != actual_pairs:
         raise ValueError(
             "After one match, players with one win should be paired.")
-    print "8. After one match, players with one win are paired."
+    print "9. After one match, players with one win are paired."
 
 
 if __name__ == '__main__':
@@ -131,6 +148,7 @@ if __name__ == '__main__':
     testCount()
     testRegister()
     testRegisterCountDelete()
+    testCreateTournament()
     testStandingsBeforeMatches()
     testReportMatches()
     testPairings()

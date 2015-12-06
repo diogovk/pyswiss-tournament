@@ -14,18 +14,41 @@ def connect():
 shared_conn = connect()
 
 
-def deleteMatches():
-    """Remove all the match records from the database."""
+def deleteAllTournaments():
+    """Remove all the tournaments and associated date from the database. """
     with shared_conn.cursor() as cursor:
         cursor.execute("delete from matches")
+        cursor.execute("delete from tournaments")
+        shared_conn.commit()
+
+def deleteMatches(tournament_id="*"):
+    """Remove all the match records from the database.
+
+    Args:
+      tournament_id: the id of the tournament whose matches should be
+                     deleted, or "*" to delete all matches from all tournaments
+    """
+    with shared_conn.cursor() as cursor:
+        if tournament_id == "*":
+            cursor.execute("delete from matches")
+        else:
+            cursor.execute("delete from matches where tournament = %s", tournament)
         shared_conn.commit()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
     with shared_conn.cursor() as cursor:
+        cursor.execute("delete from participants")
         cursor.execute("delete from players")
         shared_conn.commit()
+
+
+def countTournaments():
+    """Returns the number of tournaments in the database."""
+    with shared_conn.cursor() as cursor:
+        cursor.execute("select count(*) from tournaments")
+        return cursor.fetchone()[0]
 
 
 def countPlayers():
@@ -35,11 +58,20 @@ def countPlayers():
         return cursor.fetchone()[0]
 
 
+def countParticipants(tournament_id):
+    """Returns the number of participants currently registered in a tournament
+
+    Args:
+      tournament_id: the id of the tournament
+    """
+    with shared_conn.cursor() as cursor:
+        cursor.execute("select count(*) from players")
+        return cursor.fetchone()[0]
+
 def registerPlayer(name):
     """Adds a player to the tournament database.
 
-    The database assigns a unique serial id number for the player.  (This
-    should be handled by your SQL database schema, not in your Python code.)
+    The database assigns a unique serial id number for the player.
 
     Args:
       name: the player's full name (need not be unique).
@@ -48,6 +80,23 @@ def registerPlayer(name):
         insert_sql = "insert into players (name) values (%s)"
         cursor.execute(insert_sql, [name])
         shared_conn.commit()
+
+def createNewTournament(description=""):
+    """Creates a new tournament in the database returning its id.
+
+    The database assigns a unique serial id number for the tournament.
+
+    Args:
+      description: A description for the tournament.
+    Returns:
+      The new tournament id, which is an integer
+    """
+    with shared_conn.cursor() as cursor:
+        insert_sql = """insert into tournaments (description) values (%s)
+		        returning id"""
+        cursor.execute(insert_sql, [description])
+        shared_conn.commit()
+        return cursor.fetchone()[0]
 
 
 def playerStandings():
