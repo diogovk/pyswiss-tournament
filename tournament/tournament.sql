@@ -6,19 +6,33 @@ DROP DATABASE IF EXISTS tournament;
 CREATE DATABASE tournament;
 \c tournament;
 
-CREATE TABLE tournaments ( id SERIAL primary key, description VARCHAR );
+CREATE TABLE tournaments (
+        id SERIAL primary key NOT NULL,
+        description VARCHAR
+);
+
 CREATE TABLE players ( id SERIAL primary key, name VARCHAR NOT NULL);
 
-CREATE TABLE participants ( id SERIAL PRIMARY KEY,
-                           player_id INTEGER REFERENCES players(id) NOT NULL,
-                           wins INTEGER NOT NULL,
-                           ties INTEGER NOT NULL,
-                           bye  BOOLEAN NOT NULL DEFAULT FALSE);
+CREATE TABLE participants (
+        tournament_id INTEGER REFERENCES tournaments(id) NOT NULL,
+        player_id INTEGER REFERENCES players(id) NOT NULL,
+        wins INTEGER NOT NULL,
+        ties INTEGER NOT NULL,
+        bye BOOLEAN NOT NULL DEFAULT FALSE,
+        PRIMARY KEY (tournament_id, player_id)
+);
 
-CREATE TABLE matches ( id SERIAL PRIMARY KEY NOT NULL,
-                       tournament_id INTEGER REFERENCES tournaments(id) NOT NULL,
-                       participant1 INTEGER REFERENCES participants(id) NOT NULL,
-                       participant2 INTEGER REFERENCES participants(id) NOT NULL);
+CREATE TABLE matches (
+        tournament_id INTEGER NOT NULL,
+        participant1 INTEGER NOT NULL,
+        participant2 INTEGER NOT NULL,
+        FOREIGN KEY (tournament_id, participant1)
+            REFERENCES participants(tournament_id, player_id),
+        FOREIGN KEY (tournament_id, participant2)
+            REFERENCES participants(tournament_id, player_id),
+        PRIMARY KEY (tournament_id, participant1, participant2)
+
+);
 
 -- -- creates a view with the row `wins` containing how many matches a certain
 -- -- player on
