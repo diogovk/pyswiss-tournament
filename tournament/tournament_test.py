@@ -101,13 +101,12 @@ def testStandingsBeforeMatches():
     elif len(standings) > 2:
         raise ValueError("Only players registered in the tournament should "
                          "appear in standings.")
-    if len(standings[0]) != 4:
-        raise ValueError("Each playerStandings row should have four columns.")
-    [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
-    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
-        raise ValueError(
-            "Newly registered players should have no matches or wins.")
-    if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
+    for standing in standings:
+        if standing.matches != 0 or standing.wins != 0 or standing.ties != 0:
+            raise ValueError("Newly registered players should have no matches, "
+                             "ties or wins.")
+    set_player_names = set([s.name for s in standings])
+    if set_player_names != set(["Melpomene Murray", "Randy Schwartz"]):
         raise ValueError("Registered players' names should appear in standings, "
                          "even if they have no matches played.")
     print "7. Newly registered players appear in the standings with no matches."
@@ -119,12 +118,12 @@ def testReportVictory():
     reportVictory(tournament_id, id1, id2)
     reportVictory(tournament_id, id3, id4)
     standings = playerStandings(tournament_id)
-    for (i, n, w, m) in standings:
-        if m != 1:
+    for standing in standings:
+        if standing.matches != 1:
             raise ValueError("Each player should have one match recorded.")
-        if i in (id1, id3) and w != 1:
+        if standing.player_id in (id1, id3) and standing.wins != 1:
             raise ValueError("Each match winner should have one win recorded.")
-        elif i in (id2, id4) and w != 0:
+        elif standing.player_id in (id2, id4) and standing.wins != 0:
             raise ValueError("Each match loser should have zero wins recorded.")
     print "8. After a match, players have updated standings."
 

@@ -4,6 +4,7 @@
 #
 
 import psycopg2
+from psycopg2.extras import NamedTupleCursor
 
 
 def connect():
@@ -135,11 +136,13 @@ def playerStandings(tournament_id):
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    query = """select participants_matches.player_id, players.name,
-            participants_matches.wins, participants_matches.matches
+    query = """
+            select participants_matches.player_id, players.name,
+            participants_matches.wins, participants_matches.ties,
+            participants_matches.matches
             from participants_matches, players
             where players.id = participants_matches.player_id"""
-    with shared_conn.cursor() as cursor:
+    with shared_conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute(query)
         return cursor.fetchall()
 
