@@ -4,6 +4,19 @@
 
 from tournament import *
 
+def setupTournament():
+    """ Returns a new tournament with 4 players enrolled in it """
+    id1 = createNewPlayer("Bruno Walton")
+    id2  = createNewPlayer("Boots O'Neal")
+    id3 = createNewPlayer("Cathy Burton")
+    id4 = createNewPlayer("Diane Grant")
+    tournament_id = createNewTournament()
+    entryTournament(tournament_id, id1)
+    entryTournament(tournament_id, id2)
+    entryTournament(tournament_id, id3)
+    entryTournament(tournament_id, id4)
+    return (tournament_id, [id1, id2, id3, id4])
+
 def testDeleteMatches():
     deleteMatches()
     print "1. Old matches can be deleted."
@@ -102,15 +115,7 @@ def testStandingsBeforeMatches():
 
 def testReportVictory():
     deleteAllTournaments()
-    id1 = createNewPlayer("Bruno Walton")
-    id2  = createNewPlayer("Boots O'Neal")
-    id3 = createNewPlayer("Cathy Burton")
-    id4 = createNewPlayer("Diane Grant")
-    tournament_id = createNewTournament()
-    entryTournament(tournament_id, id1)
-    entryTournament(tournament_id, id2)
-    entryTournament(tournament_id, id3)
-    entryTournament(tournament_id, id4)
+    tournament_id, [id1, id2, id3, id4] = setupTournament()
     reportVictory(tournament_id, id1, id2)
     reportVictory(tournament_id, id3, id4)
     standings = playerStandings(tournament_id)
@@ -126,15 +131,7 @@ def testReportVictory():
 
 def testPairings():
     deleteAllTournaments()
-    id1 = createNewPlayer("Twilight Sparkle")
-    id2 = createNewPlayer("Fluttershy")
-    id3 = createNewPlayer("Applejack")
-    id4 = createNewPlayer("Pinkie Pie")
-    tournament_id = createNewTournament()
-    entryTournament(tournament_id, id1)
-    entryTournament(tournament_id, id2)
-    entryTournament(tournament_id, id3)
-    entryTournament(tournament_id, id4)
+    tournament_id, [id1, id2, id3, id4] = setupTournament()
     reportVictory(tournament_id, id1, id2)
     reportVictory(tournament_id, id3, id4)
     pairings = swissPairings(tournament_id)
