@@ -18,12 +18,14 @@ def deleteAllTournaments():
     """Remove all the tournaments and associated date from the database. """
     with shared_conn.cursor() as cursor:
         cursor.execute("delete from matches")
+        cursor.execute("delete from participants")
         cursor.execute("delete from tournaments")
         shared_conn.commit()
 
 def deleteMatches(tournament_id="*"):
     """Remove all the match records from the database.
 
+    Please note that when removing matches, the participants scores are also cleared.
     Args:
       tournament_id: the id of the tournament whose matches should be
                      deleted, or "*" to delete all matches from all tournaments
@@ -31,8 +33,11 @@ def deleteMatches(tournament_id="*"):
     with shared_conn.cursor() as cursor:
         if tournament_id == "*":
             cursor.execute("delete from matches")
+            cursor.execute("update participants set wins=0, ties=0, bye=false")
         else:
             cursor.execute("delete from matches where tournament = %s", tournament)
+            cursor.execute("update participants set wins=0, ties=0, bye=false"
+                    "where tournament = %s", tournament)
         shared_conn.commit()
 
 
@@ -68,8 +73,8 @@ def countParticipants(tournament_id):
         cursor.execute("select count(*) from players")
         return cursor.fetchone()[0]
 
-def registerPlayer(name):
-    """Adds a player to the tournament database.
+def createNewPlayer(name):
+    """Register a player to the tournament database.
 
     The database assigns a unique serial id number for the player.
 
@@ -77,9 +82,10 @@ def registerPlayer(name):
       name: the player's full name (need not be unique).
     """
     with shared_conn.cursor() as cursor:
-        insert_sql = "insert into players (name) values (%s)"
+        insert_sql = "insert into players (name) values (%s) returning id"
         cursor.execute(insert_sql, [name])
         shared_conn.commit()
+        return cursor.fetchone()[0]
 
 def createNewTournament(description=""):
     """Creates a new tournament in the database returning its id.
@@ -92,14 +98,28 @@ def createNewTournament(description=""):
       The new tournament id, which is an integer
     """
     with shared_conn.cursor() as cursor:
-        insert_sql = """insert into tournaments (description) values (%s)
-		        returning id"""
+        insert_sql = """
+            insert into tournaments (description) values (%s) returning id"""
         cursor.execute(insert_sql, [description])
         shared_conn.commit()
         return cursor.fetchone()[0]
 
 
-def playerStandings():
+def entryTournament(tournament_id, player_id):
+    """Register a player in a tournament.
+
+    Args:
+      tournament_id: The ID of an existing tournament.
+      player_id: The ID of the player registering for the tournament.
+    """
+    with shared_conn.cursor() as cursor:
+        insert_sql = """
+            insert into participants (tournament_id, player_id) values (%s, %s)"""
+        cursor.execute(insert_sql, (tournament_id, player_id))
+        shared_conn.commit()
+
+
+def playerStandings(tournament_id):
     """Returns a list of the players and their win records, sorted by wins.
 
     The first entry in the list should be the player in first place, or a player
@@ -112,9 +132,10 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    query = """select pw.id, pw.name, pw.wins, players_matches.matches
-               from players_wins as pw left join players_matches
-               ON (players_matches.id = pw.id)"""
+    query = """select participants_matches.player_id, players.name,
+            participants_matches.wins, participants_matches.matches
+            from participants_matches, players
+            where players.id = participants_matches.player_id"""
     with shared_conn.cursor() as cursor:
         cursor.execute(query)
         return cursor.fetchall()

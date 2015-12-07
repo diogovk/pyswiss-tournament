@@ -30,7 +30,7 @@ def testCount():
 def testRegister():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Chandra Nalaar")
+    createNewPlayer("Chandra Nalaar")
     c = countPlayers()
     if c != 1:
         raise ValueError(
@@ -41,10 +41,10 @@ def testRegister():
 def testRegisterCountDelete():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Markov Chaney")
-    registerPlayer("Joe Malik")
-    registerPlayer("Mao Tsu-hsi")
-    registerPlayer("Atlanta Hope")
+    createNewPlayer("Markov Chaney")
+    createNewPlayer("Joe Malik")
+    createNewPlayer("Mao Tsu-hsi")
+    createNewPlayer("Atlanta Hope")
     c = countPlayers()
     if c != 4:
         raise ValueError(
@@ -76,14 +76,18 @@ def testCreateTournament():
 def testStandingsBeforeMatches():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Melpomene Murray")
-    registerPlayer("Randy Schwartz")
-    standings = playerStandings()
+    player1_id = createNewPlayer("Melpomene Murray")
+    player2_id = createNewPlayer("Randy Schwartz")
+    tournament_id = createNewTournament()
+    entryTournament(tournament_id, player1_id)
+    entryTournament(tournament_id, player2_id)
+    standings = playerStandings(tournament_id)
     if len(standings) < 2:
         raise ValueError("Players should appear in playerStandings even before "
                          "they have played any matches.")
     elif len(standings) > 2:
-        raise ValueError("Only registered players should appear in standings.")
+        raise ValueError("Only players registered in the tournament should "
+                         "appear in standings.")
     if len(standings[0]) != 4:
         raise ValueError("Each playerStandings row should have four columns.")
     [(id1, name1, wins1, matches1), (id2, name2, wins2, matches2)] = standings
@@ -99,10 +103,10 @@ def testStandingsBeforeMatches():
 def testReportMatches():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Bruno Walton")
-    registerPlayer("Boots O'Neal")
-    registerPlayer("Cathy Burton")
-    registerPlayer("Diane Grant")
+    createNewPlayer("Bruno Walton")
+    createNewPlayer("Boots O'Neal")
+    createNewPlayer("Cathy Burton")
+    createNewPlayer("Diane Grant")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
     reportMatch(id1, id2)
@@ -121,10 +125,10 @@ def testReportMatches():
 def testPairings():
     deleteMatches()
     deletePlayers()
-    registerPlayer("Twilight Sparkle")
-    registerPlayer("Fluttershy")
-    registerPlayer("Applejack")
-    registerPlayer("Pinkie Pie")
+    createNewPlayer("Twilight Sparkle")
+    createNewPlayer("Fluttershy")
+    createNewPlayer("Applejack")
+    createNewPlayer("Pinkie Pie")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
     reportMatch(id1, id2)
