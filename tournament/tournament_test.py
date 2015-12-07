@@ -100,18 +100,20 @@ def testStandingsBeforeMatches():
     print "7. Newly registered players appear in the standings with no matches."
 
 
-def testReportMatches():
-    deleteMatches()
-    deletePlayers()
-    createNewPlayer("Bruno Walton")
-    createNewPlayer("Boots O'Neal")
-    createNewPlayer("Cathy Burton")
-    createNewPlayer("Diane Grant")
-    standings = playerStandings()
-    [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
-    standings = playerStandings()
+def testReportVictory():
+    deleteAllTournaments()
+    id1 = createNewPlayer("Bruno Walton")
+    id2  = createNewPlayer("Boots O'Neal")
+    id3 = createNewPlayer("Cathy Burton")
+    id4 = createNewPlayer("Diane Grant")
+    tournament_id = createNewTournament()
+    entryTournament(tournament_id, id1)
+    entryTournament(tournament_id, id2)
+    entryTournament(tournament_id, id3)
+    entryTournament(tournament_id, id4)
+    reportVictory(tournament_id, id1, id2)
+    reportVictory(tournament_id, id3, id4)
+    standings = playerStandings(tournament_id)
     for (i, n, w, m) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
@@ -131,8 +133,8 @@ def testPairings():
     createNewPlayer("Pinkie Pie")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2)
-    reportMatch(id3, id4)
+    reportVictory(id1, id2)
+    reportVictory(id3, id4)
     pairings = swissPairings()
     if len(pairings) != 2:
         raise ValueError(
@@ -154,7 +156,7 @@ if __name__ == '__main__':
     testRegisterCountDelete()
     testCreateTournament()
     testStandingsBeforeMatches()
-    testReportMatches()
+    testReportVictory()
     testPairings()
     print "Success!  All tests pass!"
 

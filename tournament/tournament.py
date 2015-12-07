@@ -141,17 +141,63 @@ def playerStandings(tournament_id):
         return cursor.fetchall()
 
 
-def reportMatch(winner, loser):
+def reportTie(tournament_id, player1, player2):
     """Records the outcome of a single match between two players.
 
+    Both participants will get 1 tie (1 point), and match counts will
+    be updated.
+
+    See also: reportVictory()
     Args:
+      tournament_id: the id of the tournament
+      player1:  the id number of the first player
+      player2:  the id number of the second player
+    """
+    with shared_conn.cursor() as cursor:
+        _insertMatch(cursor, tournament_id, player1, player2)
+        update_sql = """
+            update participants set wins = wins+1
+            where tournament_id = %s and
+            (player_id = %s or player_id = %s ) """
+        cursor.execute(update_sql, (tournament_id, player1))
+        shared_conn.commit()
+
+
+def reportVictory(tournament_id, winner, loser):
+    """Records the winner and loser of a single match.
+
+    The winner participant will get 1 win (3 points), and match counts will
+    be updated for both players.
+
+    See also: reportTie()
+    Args:
+      tournament_id: the id of the tournament
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
     with shared_conn.cursor() as cursor:
-        insert_sql = "insert into matches (winner, loser) values (%s, %s)"
-        cursor.execute(insert_sql, [winner, loser])
+        _insertMatch(cursor, tournament_id, winner, loser)
+        update_sql = """update participants set wins = wins+1
+                where tournament_id = %s and player_id = %s """
+        cursor.execute(update_sql, (tournament_id, winner))
         shared_conn.commit()
+
+
+def _insertMatch(cursor, tournament_id, player1, player2):
+    """ Inserts a match into the database.
+
+    The column in which each player is stored should be constant, as to avoid
+    that two matches with the same players in the same tournament are stored.
+    This means that insertMatch(c,t, 1, 2) followed by insertMatch(c, t, 2, 1) will generate a primary key violation.
+    The user should not use this function directly, istead using reportVictory() and reportTie()
+    """
+    insert_sql = "insert into matches (tournament_id, participant1, participant2) values (%s, %s, %s)"
+    if player1 > player2:
+        cursor.execute(insert_sql, (tournament_id, player2, player1))
+    else:
+        cursor.execute(insert_sql, (tournament_id, player1, player2))
+
+
 
 
 def swissPairings():
