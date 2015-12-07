@@ -25,7 +25,9 @@ def deleteAllTournaments():
 def deleteMatches(tournament_id="*"):
     """Remove all the match records from the database.
 
-    Please note that when removing matches, the participants scores are also cleared.
+    Please note that when removing matches, the participants scores are also
+    cleared.
+
     Args:
       tournament_id: the id of the tournament whose matches should be
                      deleted, or "*" to delete all matches from all tournaments
@@ -35,7 +37,8 @@ def deleteMatches(tournament_id="*"):
             cursor.execute("delete from matches")
             cursor.execute("update participants set wins=0, ties=0, bye=false")
         else:
-            cursor.execute("delete from matches where tournament = %s", tournament)
+            cursor.execute("delete from matches where tournament = %s",
+                    tournament)
             cursor.execute("update participants set wins=0, ties=0, bye=false"
                     "where tournament = %s", tournament)
         shared_conn.commit()
@@ -112,9 +115,9 @@ def entryTournament(tournament_id, player_id):
       tournament_id: The ID of an existing tournament.
       player_id: The ID of the player registering for the tournament.
     """
+    insert_sql = """
+        insert into participants (tournament_id, player_id) values (%s, %s)"""
     with shared_conn.cursor() as cursor:
-        insert_sql = """
-            insert into participants (tournament_id, player_id) values (%s, %s)"""
         cursor.execute(insert_sql, (tournament_id, player_id))
         shared_conn.commit()
 
@@ -122,8 +125,8 @@ def entryTournament(tournament_id, player_id):
 def playerStandings(tournament_id):
     """Returns a list of the players and their win records, sorted by wins.
 
-    The first entry in the list should be the player in first place, or a player
-    tied for first place if there is currently a tie.
+    The first entry in the list should be the player in first place, or a
+    player tied for first place if there is currently a tie.
 
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
@@ -188,10 +191,13 @@ def _insertMatch(cursor, tournament_id, player1, player2):
 
     The column in which each player is stored should be constant, as to avoid
     that two matches with the same players in the same tournament are stored.
-    This means that insertMatch(c,t, 1, 2) followed by insertMatch(c, t, 2, 1) will generate a primary key violation.
-    The user should not use this function directly, istead using reportVictory() and reportTie()
+    This means that insertMatch(c,t, 1, 2) followed by insertMatch(c, t, 2, 1)
+    will generate a primary key violation.
+    The user should not use this function directly, istead using reportVictory()
+    and reportTie()
     """
-    insert_sql = "insert into matches (tournament_id, participant1, participant2) values (%s, %s, %s)"
+    insert_sql = """insert into matches (tournament_id, participant1,
+            participant2) values (%s, %s, %s)"""
     if player1 > player2:
         cursor.execute(insert_sql, (tournament_id, player2, player1))
     else:
