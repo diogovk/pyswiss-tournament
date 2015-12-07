@@ -125,17 +125,19 @@ def testReportVictory():
 
 
 def testPairings():
-    deleteMatches()
-    deletePlayers()
-    createNewPlayer("Twilight Sparkle")
-    createNewPlayer("Fluttershy")
-    createNewPlayer("Applejack")
-    createNewPlayer("Pinkie Pie")
-    standings = playerStandings()
-    [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportVictory(id1, id2)
-    reportVictory(id3, id4)
-    pairings = swissPairings()
+    deleteAllTournaments()
+    id1 = createNewPlayer("Twilight Sparkle")
+    id2 = createNewPlayer("Fluttershy")
+    id3 = createNewPlayer("Applejack")
+    id4 = createNewPlayer("Pinkie Pie")
+    tournament_id = createNewTournament()
+    entryTournament(tournament_id, id1)
+    entryTournament(tournament_id, id2)
+    entryTournament(tournament_id, id3)
+    entryTournament(tournament_id, id4)
+    reportVictory(tournament_id, id1, id2)
+    reportVictory(tournament_id, id3, id4)
+    pairings = swissPairings(tournament_id)
     if len(pairings) != 2:
         raise ValueError(
             "For four players, swissPairings should return two pairs.")

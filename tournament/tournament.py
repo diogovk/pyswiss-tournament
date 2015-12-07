@@ -200,7 +200,7 @@ def _insertMatch(cursor, tournament_id, player1, player2):
 
 
 
-def swissPairings():
+def swissPairings(tournament_id):
     """Returns a list of pairs of players for the next round of a match.
 
     Assuming that there are an even number of players registered, each player
@@ -215,10 +215,13 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    query = """select players_wins.id, players_wins.name from players_wins
-               order by players_wins.wins"""
+    query = """
+        select participants.player_id, players.name from participants, players
+        where participants.player_id = players.id and tournament_id = %s
+        order by participants.wins
+        """
     with shared_conn.cursor() as cursor:
-        cursor.execute(query)
+        cursor.execute(query, [tournament_id])
         pairings = []
         for player_id, player_name in cursor:
             opponent = cursor.fetchone()
