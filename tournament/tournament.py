@@ -226,11 +226,12 @@ def swissPairings(tournament_id):
         id2: the second player's unique id
         name2: the second player's name
     """
+    # The view player_standings already orders by points
     query = """
-        select participants.player_id, players.name from participants, players
-        where participants.player_id = players.id and tournament_id = %s
-        order by participants.wins
-        """
+            select player_standings.player_id, players.name
+            from player_standings, players
+            where players.id = player_standings.player_id
+            and tournament_id = %s"""
     with shared_conn.cursor() as cursor:
         cursor.execute(query, [tournament_id])
         pairings = []
