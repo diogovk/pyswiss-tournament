@@ -139,7 +139,7 @@ def playerStandings(tournament_id):
     query = """
             select participants_matches.player_id, players.name,
             participants_matches.wins, participants_matches.ties,
-            participants_matches.matches
+            participants_matches.matches, participants_matches.points
             from participants_matches, players
             where players.id = participants_matches.player_id"""
     with shared_conn.cursor(cursor_factory=NamedTupleCursor) as cursor:

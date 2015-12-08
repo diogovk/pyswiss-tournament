@@ -102,9 +102,10 @@ def testStandingsBeforeMatches():
         raise ValueError("Only players registered in the tournament should "
                          "appear in standings.")
     for standing in standings:
-        if standing.matches != 0 or standing.wins != 0 or standing.ties != 0:
+        if (standing.matches != 0 or standing.wins != 0
+                or standing.ties != 0 or standing.points != 0):
             raise ValueError("Newly registered players should have no matches, "
-                             "ties or wins.")
+                             "ties, wins or points.")
     set_player_names = set([s.name for s in standings])
     if set_player_names != set(["Melpomene Murray", "Randy Schwartz"]):
         raise ValueError("Registered players' names should appear in standings, "
@@ -157,7 +158,6 @@ def testReportTie():
         if standing.player_id in (id1, id2) and standing.ties != 0:
             raise ValueError("Winning and losing should not increase the "
                              "player tie count.")
-
     print "10. After a tie, player standings shoudl update accordingly."
 
 if __name__ == '__main__':

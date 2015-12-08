@@ -34,20 +34,17 @@ CREATE TABLE matches (
 
 );
 
--- -- creates a view with the row `wins` containing how many matches a certain
--- -- player on
--- CREATE VIEW players_wins AS SELECT players.*, COUNT(matches.winner) as wins
---                             FROM players LEFT JOIN matches
---                             ON (matches.winner = players.id)
---                             GROUP BY players.id;
---
--- -- creates a view with the row `matches` containing how many matches were
--- -- played by a certain player
-
-CREATE VIEW participants_matches AS SELECT participants.*, count(matches.tournament_id) AS matches
-                                FROM participants LEFT JOIN matches
-                                ON (
-                                    (participant1 = participants.player_id OR participant2 = participants.player_id)
-                                    AND matches.tournament_id = participants.tournament_id)
-                                GROUP BY participants.tournament_id, participants.player_id;
---
+CREATE VIEW participants_matches AS
+        SELECT participants.*,
+        count(matches.tournament_id) AS matches,
+        -- each win 3 points, bye 3 points, tie 1 point
+        participants.wins*3 + participants.ties +
+            (case when participants.bye then 3 else 0 end) as points
+        FROM participants LEFT JOIN matches
+        ON (
+                (
+                    participant1 = participants.player_id
+                    OR participant2 = participants.player_id
+                  )
+                AND matches.tournament_id = participants.tournament_id)
+       GROUP BY participants.tournament_id, participants.player_id;
