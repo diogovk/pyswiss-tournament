@@ -63,3 +63,11 @@ http://initd.org/psycopg/docs
 P2TournamentResults-GettingStarted.pdf provided by Udacity
 
 https://en.wikipedia.org/wiki/Swiss-system_tournament
+
+http://stackoverflow.com/questions/21103732/ordereddict-comprehensions
+
+http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+
+http://stackoverflow.com/questions/5396498/postgresql-sql-count-of-true-values
+
+
