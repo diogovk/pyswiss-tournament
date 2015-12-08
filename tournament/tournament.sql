@@ -34,7 +34,7 @@ CREATE TABLE matches (
 
 );
 
-CREATE VIEW participants_matches AS
+CREATE VIEW player_standings AS
         SELECT participants.*,
         count(matches.tournament_id) AS matches,
         -- each win 3 points, bye 3 points, tie 1 point

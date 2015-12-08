@@ -138,11 +138,11 @@ def playerStandings(tournament_id):
         matches: the number of matches the player has played
     """
     query = """
-            select participants_matches.player_id, players.name,
-            participants_matches.wins, participants_matches.ties,
-            participants_matches.matches, participants_matches.points
-            from participants_matches, players
-            where players.id = participants_matches.player_id"""
+            select player_standings.player_id, players.name,
+            player_standings.wins, player_standings.ties,
+            player_standings.matches, player_standings.points
+            from player_standings, players
+            where players.id = player_standings.player_id"""
     with shared_conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute(query)
         # return dictionary with player_id as key, and standing as value
