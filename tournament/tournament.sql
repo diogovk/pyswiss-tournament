@@ -47,4 +47,5 @@ CREATE VIEW participants_matches AS
                     OR participant2 = participants.player_id
                   )
                 AND matches.tournament_id = participants.tournament_id)
-       GROUP BY participants.tournament_id, participants.player_id;
+       GROUP BY participants.tournament_id, participants.player_id
+       ORDER BY points DESC;

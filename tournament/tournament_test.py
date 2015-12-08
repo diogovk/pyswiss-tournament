@@ -101,12 +101,12 @@ def testStandingsBeforeMatches():
     elif len(standings) > 2:
         raise ValueError("Only players registered in the tournament should "
                          "appear in standings.")
-    for standing in standings:
+    for standing in standings.values():
         if (standing.matches != 0 or standing.wins != 0
                 or standing.ties != 0 or standing.points != 0):
             raise ValueError("Newly registered players should have no matches, "
                              "ties, wins or points.")
-    set_player_names = set([s.name for s in standings])
+    set_player_names = set([s.name for s in standings.values()])
     if set_player_names != set(["Melpomene Murray", "Randy Schwartz"]):
         raise ValueError("Registered players' names should appear in standings, "
                          "even if they have no matches played.")
@@ -119,13 +119,13 @@ def testReportVictory():
     reportVictory(tournament_id, id1, id2)
     reportVictory(tournament_id, id3, id4)
     standings = playerStandings(tournament_id)
-    for standing in standings:
+    for standing in standings.values():
         if standing.matches != 1:
             raise ValueError("Each player should have one match recorded.")
-        if standing.player_id in (id1, id3) and standing.wins != 1:
-            raise ValueError("Each match winner should have one win recorded.")
-        elif standing.player_id in (id2, id4) and standing.wins != 0:
-            raise ValueError("Each match loser should have zero wins recorded.")
+    if standings[id1].wins != 1 and standings[id3].wins != 1:
+        raise ValueError("Each match winner should have one win recorded.")
+    if standings[id2].wins != 0 and standings[id4].wins != 0:
+        raise ValueError("Each match loser should have zero wins recorded.")
     print "8. After a match, players have updated standings."
 
 
@@ -146,19 +146,27 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "9. After one match, players with one win are paired."
 
-def testReportTie():
+def testPoints():
     deleteAllTournaments()
     tournament_id, [id1, id2, id3, id4] = setupTournament()
-    reportVictory(tournament_id, id1, id2)
+    reportVictory(tournament_id, id2, id1)
     reportTie(tournament_id, id3, id4)
     standings = playerStandings(tournament_id)
-    for standing in standings:
-        if standing.player_id in (id3, id4) and standing.ties != 1:
-            raise ValueError("Players should have one tie after a reported tie.")
-        if standing.player_id in (id1, id2) and standing.ties != 0:
-            raise ValueError("Winning and losing should not increase the "
-                             "player tie count.")
-    print "10. After a tie, player standings shoudl update accordingly."
+    if standings[id2].points != 3:
+        raise ValueError(
+                "A player should have 3 points after winning one round.")
+    if standings[id1].points != 0:
+        raise ValueError(
+                "A player should have 0 points after losing one round.")
+    for p_id in (id3, id4):
+        if standings[p_id].ties != 1 or standings[p_id].points != 1:
+            raise ValueError("Players should have one tie and one point after "
+                             "a reported tie.")
+    first = next(iter(standings.values()))
+    if first.points != 3:
+        raise ValueError("After the first round, where a player has won a "
+                         "match, the player on top should have 3 points.")
+    print "10. Points are given correctly depending on player win, loss or tie."
 
 if __name__ == '__main__':
     testDeleteMatches()
@@ -170,7 +178,7 @@ if __name__ == '__main__':
     testStandingsBeforeMatches()
     testReportVictory()
     testPairings()
-    testReportTie()
+    testPoints()
     print "Success!  All tests pass!"
 
 

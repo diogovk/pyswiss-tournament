@@ -5,6 +5,7 @@
 
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
+from collections import OrderedDict
 
 
 def connect():
@@ -144,7 +145,8 @@ def playerStandings(tournament_id):
             where players.id = participants_matches.player_id"""
     with shared_conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute(query)
-        return cursor.fetchall()
+        # return dictionary with player_id as key, and standing as value
+        return OrderedDict((s.player_id, s) for s in cursor.fetchall())
 
 
 def reportTie(tournament_id, player1, player2):
