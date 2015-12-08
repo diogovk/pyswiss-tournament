@@ -145,6 +145,20 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "9. After one match, players with one win are paired."
 
+def testReportTie():
+    deleteAllTournaments()
+    tournament_id, [id1, id2, id3, id4] = setupTournament()
+    reportVictory(tournament_id, id1, id2)
+    reportTie(tournament_id, id3, id4)
+    standings = playerStandings(tournament_id)
+    for standing in standings:
+        if standing.player_id in (id3, id4) and standing.ties != 1:
+            raise ValueError("Players should have one tie after a reported tie.")
+        if standing.player_id in (id1, id2) and standing.ties != 0:
+            raise ValueError("Winning and losing should not increase the "
+                             "player tie count.")
+
+    print "10. After a tie, player standings shoudl update accordingly."
 
 if __name__ == '__main__':
     testDeleteMatches()
@@ -156,6 +170,7 @@ if __name__ == '__main__':
     testStandingsBeforeMatches()
     testReportVictory()
     testPairings()
+    testReportTie()
     print "Success!  All tests pass!"
 
 

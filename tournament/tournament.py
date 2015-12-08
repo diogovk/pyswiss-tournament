@@ -162,10 +162,10 @@ def reportTie(tournament_id, player1, player2):
     with shared_conn.cursor() as cursor:
         _insertMatch(cursor, tournament_id, player1, player2)
         update_sql = """
-            update participants set wins = wins+1
+            update participants set ties = ties+1
             where tournament_id = %s and
             (player_id = %s or player_id = %s ) """
-        cursor.execute(update_sql, (tournament_id, player1))
+        cursor.execute(update_sql, (tournament_id, player1, player2))
         shared_conn.commit()
 
 
