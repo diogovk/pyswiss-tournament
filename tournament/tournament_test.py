@@ -168,6 +168,29 @@ def testPoints():
                          "match, the player on top should have 3 points.")
     print "10. Points are given correctly depending on player win, loss or tie."
 
+def testBye():
+    player_id = createNewPlayer("Melpomene Murray")
+    tournament_id = createNewTournament()
+    entryTournament(tournament_id, player_id)
+    standings = playerStandings(tournament_id)
+    points_before_bye = standings[player_id].points
+    reportBye(tournament_id, player_id)
+    standings = playerStandings(tournament_id)
+    points_after_bye = standings[player_id].points
+    if points_before_bye != 0 and points_after_bye != 3:
+        raise ValueError("A new player should start with 0 points and get 3 "
+                "after receiving a bye.")
+    reportBye(tournament_id, player_id)
+    standings = playerStandings(tournament_id)
+    points_after_second_bye = standings[player_id].points
+    if points_after_second_bye != 3:
+        raise ValueError(
+                "Receiving a second bye should give the player no points")
+    print "11. Receiving byes will give no more than 3 points to the player"
+
+
+
+
 if __name__ == '__main__':
     testDeleteMatches()
     testDelete()

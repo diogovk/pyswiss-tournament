@@ -142,7 +142,8 @@ def playerStandings(tournament_id):
             player_standings.wins, player_standings.ties,
             player_standings.matches, player_standings.points
             from player_standings, players
-            where players.id = player_standings.player_id"""
+            where players.id = player_standings.player_id
+            order by player_standings.points desc"""
     with shared_conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute(query)
         # return dictionary with player_id as key, and standing as value
@@ -168,6 +169,25 @@ def reportTie(tournament_id, player1, player2):
             where tournament_id = %s and
             (player_id = %s or player_id = %s ) """
         cursor.execute(update_sql, (tournament_id, player1, player2))
+        shared_conn.commit()
+
+
+def reportBye(tournament_id, player):
+    """Reports that the player will receive a bye, which counts as a win.
+
+    In Swiss tournaments it's common practice to give a bye to a player left
+    with no opponent.
+    A player can receive at most 1 bye, which will give the player 3 points.
+
+    See also: reportVictory(), reportTie()
+    Args:
+      tournament_id: the id of the tournament
+      player:  the id of the player receiving the bye.
+    """
+    with shared_conn.cursor() as cursor:
+        update_sql = """update participants set bye = true
+            where tournament_id = %s and player_id = %s """
+        cursor.execute(update_sql, (tournament_id, player))
         shared_conn.commit()
 
 
@@ -226,12 +246,12 @@ def swissPairings(tournament_id):
         id2: the second player's unique id
         name2: the second player's name
     """
-    # The view player_standings already orders by points
     query = """
             select player_standings.player_id, players.name
             from player_standings, players
             where players.id = player_standings.player_id
-            and tournament_id = %s"""
+            and tournament_id = %s
+            order by player_standings.points"""
     with shared_conn.cursor() as cursor:
         cursor.execute(query, [tournament_id])
         pairings = []
