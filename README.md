@@ -7,6 +7,23 @@ A Swiss-system tournament is a tournament which uses a non-elimination format.
 Competitors meet one-to-one in each round and are paired using a predetermined set of rules designed to ensure that as far as possible a competitor plays competitors with the same current score, subject to not playing the
 same opponent more than once. The winner is the competitor with the highest aggregate points earned in all rounds.
 
+This implementation allows the creation of multiple tournaments and players.
+Each player may sign up to a tournament, and become a participant.
+The result of a match can be a win, a loss, or a tie.
+Each result will give points to the player:
+
+* Win: 3 points
+* Tie: 1 point
+* Loss: No points
+
+After registering matches, you can see the player standing, which will have players with the most points on top.
+
+In the case of a player that is left with no opponent (i.e. odd number of players) he might receive a bye, which means he'll not play for the round, but he'll gain points as if he won.
+A player cannot receive more than one bye.
+
+
+
+
 ## Setting up
 
 ### Vagrant
@@ -50,7 +67,7 @@ python2 tournament_test.py
 ## Dependencies
 
 * Postgresql
-* python-psycopg2 (versoion >= 2.5)
+* python-psycopg2 (version >= 2.5)
 
 ### Used resources
 
