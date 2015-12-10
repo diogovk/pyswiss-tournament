@@ -206,6 +206,7 @@ if __name__ == '__main__':
     testReportVictory()
     testPairings()
     testPoints()
+    testBye()
     print "Success!  All tests pass!"
 
 
