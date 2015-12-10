@@ -4,10 +4,11 @@
 
 from tournament import *
 
+
 def setupTournament():
     """ Returns a new tournament with 4 players enrolled in it """
     id1 = createNewPlayer("Bruno Walton")
-    id2  = createNewPlayer("Boots O'Neal")
+    id2 = createNewPlayer("Boots O'Neal")
     id3 = createNewPlayer("Cathy Burton")
     id4 = createNewPlayer("Diane Grant")
     tournament_id = createNewTournament()
@@ -16,6 +17,7 @@ def setupTournament():
     entryTournament(tournament_id, id3)
     entryTournament(tournament_id, id4)
     return (tournament_id, [id1, id2, id3, id4])
+
 
 def testDeleteMatches():
     deleteMatches()
@@ -68,6 +70,7 @@ def testRegisterCountDelete():
         raise ValueError("After deleting, countPlayers should return zero.")
     print "5. Players can be registered and deleted."
 
+
 def testCreateTournament():
     deleteAllTournaments()
     c = countTournaments()
@@ -78,7 +81,8 @@ def testCreateTournament():
         raise ValueError("Tourament id should be an integer")
     c = countTournaments()
     if c != 3:
-        raise ValueError("After creating 3 tournaments, countTournaments should be 3")
+        raise ValueError(
+                "After creating 3 tournaments, countTournaments should be 3")
     deleteAllTournaments()
     c = countTournaments()
     if c != 0:
@@ -102,14 +106,14 @@ def testStandingsBeforeMatches():
         raise ValueError("Only players registered in the tournament should "
                          "appear in standings.")
     for standing in standings.values():
-        if (standing.matches != 0 or standing.wins != 0
-                or standing.ties != 0 or standing.points != 0):
+        if (standing.matches != 0 or standing.wins != 0 or
+                standing.ties != 0 or standing.points != 0):
             raise ValueError("Newly registered players should have no matches, "
                              "ties, wins or points.")
     set_player_names = set([s.name for s in standings.values()])
     if set_player_names != set(["Melpomene Murray", "Randy Schwartz"]):
-        raise ValueError("Registered players' names should appear in standings, "
-                         "even if they have no matches played.")
+        raise ValueError("Registered players' names should appear in "
+                         "standings, even if they have no matches played.")
     print "7. Newly registered players appear in the standings with no matches."
 
 
@@ -146,6 +150,7 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "9. After one match, players with one win are paired."
 
+
 def testPoints():
     deleteAllTournaments()
     tournament_id, [id1, id2, id3, id4] = setupTournament()
@@ -168,6 +173,7 @@ def testPoints():
                          "match, the player on top should have 3 points.")
     print "10. Points are given correctly depending on player win, loss or tie."
 
+
 def testBye():
     player_id = createNewPlayer("Melpomene Murray")
     tournament_id = createNewTournament()
@@ -179,7 +185,7 @@ def testBye():
     points_after_bye = standings[player_id].points
     if points_before_bye != 0 and points_after_bye != 3:
         raise ValueError("A new player should start with 0 points and get 3 "
-                "after receiving a bye.")
+                         "after receiving a bye.")
     reportBye(tournament_id, player_id)
     standings = playerStandings(tournament_id)
     points_after_second_bye = standings[player_id].points
@@ -187,8 +193,6 @@ def testBye():
         raise ValueError(
                 "Receiving a second bye should give the player no points")
     print "11. Receiving byes will give no more than 3 points to the player"
-
-
 
 
 if __name__ == '__main__':
