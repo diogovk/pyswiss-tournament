@@ -24,6 +24,7 @@ def deleteAllTournaments():
         cursor.execute("delete from tournaments")
         shared_conn.commit()
 
+
 def deleteMatches(tournament_id="*"):
     """Remove all the match records from the database.
 
@@ -40,9 +41,9 @@ def deleteMatches(tournament_id="*"):
             cursor.execute("update participants set wins=0, ties=0, bye=false")
         else:
             cursor.execute("delete from matches where tournament = %s",
-                    tournament)
+                           tournament)
             cursor.execute("update participants set wins=0, ties=0, bye=false"
-                    "where tournament = %s", tournament)
+                           "where tournament = %s", tournament)
         shared_conn.commit()
 
 
@@ -78,6 +79,7 @@ def countParticipants(tournament_id):
         cursor.execute("select count(*) from players")
         return cursor.fetchone()[0]
 
+
 def createNewPlayer(name):
     """Register a player to the tournament database.
 
@@ -91,6 +93,7 @@ def createNewPlayer(name):
         cursor.execute(insert_sql, [name])
         shared_conn.commit()
         return cursor.fetchone()[0]
+
 
 def createNewTournament(description=""):
     """Creates a new tournament in the database returning its id.
@@ -218,8 +221,8 @@ def _insertMatch(cursor, tournament_id, player1, player2):
     that two matches with the same players in the same tournament are stored.
     This means that insertMatch(c,t, 1, 2) followed by insertMatch(c, t, 2, 1)
     will generate a primary key violation.
-    The user should not use this function directly, istead using reportVictory()
-    and reportTie()
+    The user should not use this function directly, instead using
+    reportVictory() and reportTie()
     """
     insert_sql = """insert into matches (tournament_id, participant1,
             participant2) values (%s, %s, %s)"""
@@ -227,8 +230,6 @@ def _insertMatch(cursor, tournament_id, player1, player2):
         cursor.execute(insert_sql, (tournament_id, player2, player1))
     else:
         cursor.execute(insert_sql, (tournament_id, player1, player2))
-
-
 
 
 def swissPairings(tournament_id):
