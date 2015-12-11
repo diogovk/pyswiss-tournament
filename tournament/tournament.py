@@ -13,11 +13,16 @@ def connect():
     print 'Connecting to database'
     return psycopg2.connect("dbname=tournament")
 
+# Insted of openning and closing a DB connection in each method, a connection
+# is opened when you import this module, and is closed only when the
+# python process finishes.
+# If you plan in using threads, ideally you should have one connection per
+# thread, For more info, check psycopg's documentation
 shared_conn = connect()
 
 
 def deleteAllTournaments():
-    """Remove all the tournaments and associated date from the database. """
+    """Remove all the tournaments and associated data from the database. """
     with shared_conn.cursor() as cursor:
         cursor.execute("delete from matches")
         cursor.execute("delete from participants")
@@ -38,10 +43,12 @@ def deleteMatches(tournament_id="*"):
     with shared_conn.cursor() as cursor:
         if tournament_id == "*":
             cursor.execute("delete from matches")
+            # makes sure each participant has no points
             cursor.execute("update participants set wins=0, ties=0, bye=false")
         else:
             cursor.execute("delete from matches where tournament = %s",
                            tournament)
+            # makes sure every player in the tournament has no points
             cursor.execute("update participants set wins=0, ties=0, bye=false"
                            "where tournament = %s", tournament)
         shared_conn.commit()
@@ -50,6 +57,8 @@ def deleteMatches(tournament_id="*"):
 def deletePlayers():
     """Remove all the player records from the database."""
     with shared_conn.cursor() as cursor:
+        # delete all references first
+        cursor.execute("delete from matches")
         cursor.execute("delete from participants")
         cursor.execute("delete from players")
         shared_conn.commit()
@@ -134,9 +143,13 @@ def playerStandings(tournament_id):
     player tied for first place if there is currently a tie.
 
     Returns:
-      A list of tuples, each of which contains (id, name, wins, matches):
-        id: the player's unique id (assigned by the database)
+      An ordered dictionary with player_id as the key, with a named tuple as
+      the value. The dictionary is ordered from most points to least points in
+      the tournament. Each named tuple contains player_id, name, ties, wins
+      and matches:
+        player_id: the player's unique id (assigned by the database)
         name: the player's full name (as registered)
+        ties: the number of matches the player has tied
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
@@ -217,13 +230,20 @@ def reportVictory(tournament_id, winner, loser):
 def _insertMatch(cursor, tournament_id, player1, player2):
     """ Inserts a match into the database.
 
-    The column in which each player is stored should be constant, as to avoid
-    that two matches with the same players in the same tournament are stored.
+    One of the rules in Swiss tournament is that a set of two players can play
+    each other only one time. So no two matches in the same tournament should
+    identical players ID.
+    This function enforces that.
     This means that insertMatch(c,t, 1, 2) followed by insertMatch(c, t, 2, 1)
     will generate a primary key violation.
     The user should not use this function directly, instead using
     reportVictory() and reportTie()
     """
+    # The primary key enforces that no two matches in the same tournament
+    # have the exact same set of players id. But for that to happen, a set of
+    # two players should be stored in a consistent way.
+    # We do that by always inserting the player with lower id in the
+    # participant1 column, and the other player in the participant2 column.
     insert_sql = """insert into matches (tournament_id, participant1,
             participant2) values (%s, %s, %s)"""
     if player1 > player2:
@@ -236,7 +256,7 @@ def swissPairings(tournament_id):
     """Returns a list of pairs of players for the next round of a match.
 
     Assuming that there are an even number of players registered, each player
-    appears exactly once in the pairings.  Each player is paired with another
+    appears exactly once in the pairings. Each player is paired with another
     player with an equal or nearly-equal win record, that is, a player adjacent
     to him or her in the standings.
 
