@@ -22,8 +22,6 @@ In the case of a player that is left with no opponent (i.e. odd number of player
 A player cannot receive more than one bye.
 
 
-
-
 ## Setting up
 
 ### Vagrant
@@ -63,6 +61,16 @@ To run the test suite:
 ```
 python2 tournament_test.py
 ```
+
+### Different Solutions
+
+You can see the solution of the original "challenge" (without extra credit functionality) by checking out the tag `solution_without_extras`:
+```
+git checkout solution_without_extras
+```
+Whenever you do a checkout, please remember to recreate the database with the psql command mentioned above.
+Failing to do that will probably result in erros, as required table and columns might not exist.
+
 
 ## Dependencies
 
